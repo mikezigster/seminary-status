@@ -1,0 +1,44 @@
+name: Publish status page
+
+on:
+  # Every 3 hours from about 5 AM to 11 PM Central (GitHub schedules run in UTC).
+  schedule:
+    - cron: "7 11,14,17,20,23,2,5 * * *"
+  # A "Run workflow" button on the Actions tab, for an instant refresh.
+  workflow_dispatch:
+  # Rebuild whenever the code or config changes.
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build page from Todoist
+        env:
+          TODOIST_TOKEN: ${{ secrets.TODOIST_TOKEN }}
+        run: python3 build.py --out site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
