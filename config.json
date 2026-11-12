@@ -1,0 +1,8 @@
+{
+  "parent_project": "MAC Classes",
+  "include_parent_project_tasks": true,
+  "timezone": "America/Chicago",
+  "plan_ahead_days": 90,
+  "mobile_overdue_preview": 5,
+  "site_title": "Seminary accountability"
+}
