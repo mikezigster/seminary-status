@@ -1,0 +1,23 @@
+name: Keep schedule alive
+
+# GitHub pauses scheduled workflows in a repository with no activity for 60 days.
+# This makes one empty commit a month so the status page keeps refreshing.
+
+on:
+  schedule:
+    - cron: "17 12 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Monthly keepalive"
+          git push
